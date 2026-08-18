@@ -104,7 +104,7 @@ bool SDCardManager::ready() const {
   return initialized;
 }
 
-std::vector<String> SDCardManager::listFiles(const char* path, const int maxFiles) {
+std::vector<String> SDCardManager::listFiles(const char* path, const int maxFiles, const bool includeDirectories) {
   std::vector<String> ret;
   if (!initialized) {
     if (Serial) Serial.printf("[%lu] [SD] not initialized, returning empty list\n", millis());
@@ -126,6 +126,11 @@ std::vector<String> SDCardManager::listFiles(const char* path, const int maxFile
   char name[128];
   for (auto f = root.openNextFile(); f && count < maxFiles; f = root.openNextFile()) {
     if (f.isDirectory()) {
+      if (includeDirectories) {
+        f.getName(name, sizeof(name));
+        ret.emplace_back(name);
+        count++;
+      }
       f.close();
       continue;
     }
