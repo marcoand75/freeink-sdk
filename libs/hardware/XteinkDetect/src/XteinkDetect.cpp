@@ -591,9 +591,9 @@ uint8_t runProbePass() {
   Wire.setTimeOut(6);
   const uint8_t score =
       static_cast<uint8_t>(probeBq27220()) + static_cast<uint8_t>(probeDs3231()) + static_cast<uint8_t>(probeQmi8658());
-  Wire.end();
-  pinMode(X3_I2C_SDA, INPUT);
-  pinMode(X3_I2C_SCL, INPUT);
+  // Leave the I2C driver installed: BatteryMonitor / Rtc / IMU on the same
+  // shared bus will reuse it. Uninstalling here and then re-running Wire.begin()
+  // from another library can hit ESP_ERR_INVALID_STATE on the second install.
   return score;
 }
 
